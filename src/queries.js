@@ -12,3 +12,5 @@ export const insertItem = (text, owner_id = stitchClient.authedId()) =>
 
 export const deleteChecked = () =>
   items.deleteMany({ checked: true, }).catch(logError);
+
+export const isChecked = item => item.checked;

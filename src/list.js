@@ -38,19 +38,20 @@ class TodoList extends React.Component {
     if (event.keyCode != 13) {
       return;
     }
+    const text = event.target.value;
 
-    this.setState({ requestPending: true, });
-    insertItem(event.target.value, authID()).then(() => {
-      this._newitem.value = '';
-      this.loadList();
-    });
+    this.setState({ requestPending: true, }, () =>
+      insertItem(text, authID()).then(() => {
+        this._newitem.value = '';
+        this.loadList();
+      })
+    );
   }
 
   clear() {
-    this.setState({ requestPending: true, });
-    deleteChecked().then(() => {
-      this.loadList();
-    });
+    this.setState({ requestPending: true, }, () =>
+      deleteChecked().then(() => this.loadList())
+    );
   }
 
   setPending() {
@@ -95,7 +96,7 @@ class TodoList extends React.Component {
       </div>
     );
 
-    return stitchClient.authedId() ? loggedInResult : null;
+    return isAuthed() ? loggedInResult : null;
   }
 }
 
