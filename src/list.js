@@ -84,7 +84,7 @@ class TodoList extends React.Component {
         <ul className="items-list">
           {this.state.items.length == 0
             ? <div className="list-empty-label">empty list.</div>
-            : this.state.items.map(item =>
+            : [ ...this.state.items, ].map(item =>
               <TodoItem
                 key={item._id.toString()}
                 item={item}
