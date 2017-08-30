@@ -1,18 +1,18 @@
 import React from 'react';
 import { db, items, stitchClient, users, } from './dbClient';
+import { deleteChecked, getItems, insertItem, updateItem, } from './queries';
 
 const TodoItem = ({ item, onChange, onStartChange, }) => {
   const itemClass = item.checked ? 'done' : '';
   const clicked = () => {
-    onStartChange();
-    items
-      .updateOne({ _id: item._id, }, { $set: { checked: !item.checked, }, })
-      .then(() => onChange());
+    Promise.resolve(onStartChange())
+      .then(() => updateItem(item._id, !item.checked))
+      .then(onChange);
   };
 
   return (
     <div className="todo-item-root">
-      <label className="todo-item-container" onClick={() => clicked()}>
+      <label className="todo-item-container" onClick={clicked}>
         {item.checked
           ? <svg
             xmlns="http://www.w3.org/2000/svg"

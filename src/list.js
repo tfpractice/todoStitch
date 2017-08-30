@@ -1,5 +1,6 @@
 import React from 'react';
-import { items, stitchClient, } from './dbClient';
+import { authID, isAuthed, items, stitchClient, } from './dbClient';
+import { deleteChecked, getItems, insertItem, updateItem, } from './queries';
 import TodoItem from './todoItem';
 
 class TodoList extends React.Component {
@@ -18,24 +19,19 @@ class TodoList extends React.Component {
   }
 
   loadList() {
-    const authed = !!stitchClient.authedId();
-
-    console.log('stitchClient.authedId()', stitchClient.authedId());
-    if (!authed) {
-      return;
-    }
-
-    const obj = this;
-
-    items.find(null, null).then((data) => {
-      this.setState({ items: data, requestPending: false, });
-    });
+    isAuthed() &&
+      getItems().then((items) => {
+        this.setState({ items, requestPending: false, });
+      });
   }
 
   checkHandler(id, status) {
-    items.updateOne({ _id: id, }, { $set: { checked: status, }, }).then(() => {
-      this.loadList();
-    }, { rule: 'checked', });
+    updateItem(id, status).then(
+      () => {
+        this.loadList();
+      },
+      { rule: 'checked', }
+    );
   }
 
   addItem(event) {
@@ -44,17 +40,15 @@ class TodoList extends React.Component {
     }
 
     this.setState({ requestPending: true, });
-    items
-      .insert([{ text: event.target.value, owner_id: stitchClient.authedId(), }, ])
-      .then(() => {
-        this._newitem.value = '';
-        this.loadList();
-      });
+    insertItem(event.target.value, authID()).then(() => {
+      this._newitem.value = '';
+      this.loadList();
+    });
   }
 
   clear() {
     this.setState({ requestPending: true, });
-    items.deleteMany({ checked: true, }).then(() => {
+    deleteChecked().then(() => {
       this.loadList();
     });
   }
