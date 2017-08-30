@@ -2,7 +2,7 @@ import { db, items, stitchClient, } from './dbClient';
 
 export const logError = e => console.error(e.message);
 
-export const getItems = () => items.find(null, null).catch(logError);
+export const getItems = params => items.find(params).catch(logError);
 
 export const updateItem = (_id, checked) =>
   items.updateOne({ _id, }, { $set: { checked, }, }).catch(logError);
