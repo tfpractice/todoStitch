@@ -16,3 +16,4 @@ export const stitchClient = new StitchClient(appId, options);
 export const db = stitchClient.service('mongodb', 'mongodb-atlas').db('todo');
 export const items = db.collection('items');
 export const users = db.collection('users');
+export const isAuthed = () => !!stitchClient.authedId();
