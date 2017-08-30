@@ -5,22 +5,12 @@ import { browserHistory, Route, } from 'react-router';
 import { BrowserRouter, Link, } from 'react-router-dom';
 
 import { db, items, stitchClient, users, } from './dbClient';
-import TodoList from './list';
+
 import Settings from './settings';
-import AuthControls from './authControls';
+
+import Home from './home';
 
 require('../static/todo.scss');
-
-const Home = function() {
-  const authed = !!stitchClient.authedId();
-
-  return (
-    <div>
-      <AuthControls client={stitchClient} />
-      <TodoList />
-    </div>
-  );
-};
 
 render(
   <BrowserRouter>
