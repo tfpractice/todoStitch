@@ -3,6 +3,20 @@ import { items, stitchClient, } from './dbClient';
 import TodoItem from './todoItem';
 
 const TodoList = class extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { items: [], };
+  }
+
+  componentWillMount() {
+    this.loadList();
+  }
+
+  componentDidMount() {
+    this.loadList();
+  }
+
   loadList() {
     const authed = !!stitchClient.authedId();
 
@@ -16,24 +30,10 @@ const TodoList = class extends React.Component {
     });
   }
 
-  constructor(props) {
-    super(props);
-
-    this.state = { items: [], };
-  }
-
-  componentWillMount() {
-    this.loadList();
-  }
-
   checkHandler(id, status) {
     items.updateOne({ _id: id, }, { $set: { checked: status, }, }).then(() => {
       this.loadList();
     }, { rule: 'checked', });
-  }
-
-  componentDidMount() {
-    this.loadList();
   }
 
   addItem(event) {
