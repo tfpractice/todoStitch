@@ -2,7 +2,7 @@ import React from 'react';
 import { items, stitchClient, } from './dbClient';
 import TodoItem from './todoItem';
 
-const TodoList = class extends React.Component {
+class TodoList extends React.Component {
   constructor(props) {
     super(props);
 
@@ -20,13 +20,15 @@ const TodoList = class extends React.Component {
   loadList() {
     const authed = !!stitchClient.authedId();
 
+    console.log('stitchClient.authedId()', stitchClient.authedId());
     if (!authed) {
       return;
     }
+
     const obj = this;
 
     items.find(null, null).then((data) => {
-      obj.setState({ items: data, requestPending: false, });
+      this.setState({ items: data, requestPending: false, });
     });
   }
 
@@ -40,6 +42,7 @@ const TodoList = class extends React.Component {
     if (event.keyCode != 13) {
       return;
     }
+
     this.setState({ requestPending: true, });
     items
       .insert([{ text: event.target.value, owner_id: stitchClient.authedId(), }, ])
@@ -100,6 +103,6 @@ const TodoList = class extends React.Component {
 
     return stitchClient.authedId() ? loggedInResult : null;
   }
-};
+}
 
 export default TodoList;
