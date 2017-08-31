@@ -5,6 +5,7 @@
 [operators]:https://docs.mongodb.com/manual/reference/operator/query/
 [or]:https://docs.mongodb.com/manual/reference/operator/query/or/#op._S_or
 [exists]:https://docs.mongodb.com/manual/reference/operator/query/exists/#op._S_exists
+[readall]:https://docs.mongodb.com/stitch/rules/mongodb-rules-read/#mongodb-service-read-all-fields
 
 I enjoy programming for the sake of programming. I have repos solving the same problem in multiple languages using multiple tools and techniques, I can talk for hours about code quality, and the pleasures of refactoring. What I'm really trying to say is that I love code, almost to an absurd degree. What I don't love, however, is the setup. And apparently I'm not alone. Within the React community there's a preponderance of boilerplate repos and single function libraries, all geared toward developers who want to experiment, or just get something on the screen. But create-react-app cant do it all. Sometimes you need data, fast. And if you haven't the time or energy to wrangle the waterfall of firebase callbacks, or retrain your brain for GraphQL, you'll be glad to know that one of the JS communities most popular databases, MongoDB, has joined the Backend-as-a-Service bandwagon, and it's pretty awesome.
  
@@ -63,8 +64,9 @@ and can be specified as JSON documents
   ...
 } 
 ~~~
-expressions can contain MongoDB query expression [operators][operators] (such as [$or][or] and [$exists][exists]), and special values called [expansions][expansions]. We'll be using `%user`, and `%prevRoot`
+expressions can contain MongoDB query expression [operators][operators] (such as [$or][or] and [$exists][exists]), and special values called [expansions][expansions]. We'll be using `%user`,`%prev`, and `%prevRoot`
 - `%user` refers to the user currently logged into the app.
+- `%prev` refers to a previous field-value before it is changed by a write operation
 - `%prevRoot` refers to a document referenced in a rules expression _before_ it is changed by a write operation.
 
 ## `todo.items` rules
@@ -74,10 +76,10 @@ Sensibly, the top level read rules default to
   "owner_id": "%%user.id"
 }
 ~~~ 
-which only allows a client to read documents whose owner_id matches the ID of the current authenticated user. Because our `todo.items` collection allows everyone to read all items, we'll set the Top Level Document read rule to an empty object `{}`, which evaluates to true
+which only allows a client to read documents whose owner_id matches the ID of the current authenticated user. Because our `todo.items` collection allows everyone to read all items, we'll set the Top Level Document read rule to an empty object `{}`, which allows read access to [all fields][readall]
 
 The default write rule is identical, and 
-since we only allow users to modify their own items, this sounds like it should work. But a quick glance at the docs tell us that
+since we only allow users to modify their own items, this sounds like it should work. But a quick glance at the docs specifies that
 > the write operation must __result__ in a document where the owner_id equals the user ID of the client issuing the write. If the value of owner_id does not match the client user ID, MongoDB Stitch blocks the write.
 
 Even if a user owns an item, deleting it will result in no document at all. So in a strange yet obvious way, the default write rules will not work, and we need to edit the write rules with some expansions.
