@@ -99,9 +99,25 @@ This means that a user can perform a write operation on a document if
  - the document _prior to the operation_ was owned by the current  
  -  the document is newly inserted
  
-You can learn more about rules [here][rules], but with our database rules configured, we can now move on to our application!
 
   
- 
+## Validations
+Validation rules apply to update and insert operations. If the update and insert operations do not pass the validation rule, MongoDB Stitch fails the operations.  We will apply a field specific validation to the `owner_id` field of our `items` collection. Its default declares an update or insert to be valid if the resulting document's `owner_id` field matches the current user or is no owner_id field existed at all.
+~~~js
+{
+  "%or": [
+    { "%%prev": "%%user.id" },
+    { "%%prev": { "%exists": false } }
+  ]
+}
+~~~
+ Having already established a similar Top Level Rule, we simply need to ensure that users can only update or insert documents that they own/create. and set the validation to 
+ ~~~js
+ "%%user.id"
+ ~~~
+
+You can learn more about rules and validations [here][rules], but with our database rules configured, we can now move on to our application!
+
+
 # The Application
 The application is pretty bare-bones, and should work out of the box
