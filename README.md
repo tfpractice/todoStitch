@@ -32,7 +32,7 @@ And since our users will be anonymous, they will require little more than the de
  You'll need to create a new Stitch application to associate with  your cluster. Atlas features an intuitive UI that walks you through creating a new stitch application in under eight clicks. Then you'll be redirected to your console to setup a new collection and database client.
  ![stitchWelcome][stitchWelcome]
  
- Enable anonymous authentication, and create a new `todo` database and `items` collection. From there you'll be presented with a number fo options to setup a client. Select the nodejs tab and you'll be presented with something to the effect of:
+ Enable anonymous authentication, and create a new `todo` database and `items` collection. From there you'll be presented with a number code samples to direct you in establishing a client. The Nodejs tab will present something to the effect of:
  
  ~~~js
 const stitch = require("mongodb-stitch")
@@ -50,4 +50,38 @@ client.login().then(() =>
 });
  ~~~
  
- While this code is not useful for our app, it does show that you're more or less ready to start running your application. That easily, 
+ While this code is not useful for our app, it does show that you're more or less ready to start running your application. That easily. But before jumping into the code base directly, there are a few database specific rules we need to establish.
+ 
+# Rules 
+>> For a MongoDB Service, you have to set up rules to control access to fields for read and write operations.
+
+ When making various requests to your database, these rules determine which data will come back and how it can be manipulated. If you're familiar with other BaaS platforms like FireBase or Apollo, this is conceptually identical, and the primary distinctions are syntactic. If a rule evaluates to true, read and write operation can access the fields for which the rule applies. If a rule evaluates to false, access is denied.
+ 
+ There are two types of rules
+ -  _Top Level Document_ apply to any and all fields in a document
+ - _Field Specific Rules_ apply to specific fields and their descendants
+
+## Todo.Items Rules
+For our `todo.items` collection, we want everyone to be able to read everyone's items and so set the Top Level Document read rule to an empty object, which evaluates to true
+~~~js
+{}
+~~~
+But since only users who create items should be able to modify them, the write rules are set to 
+~~~js
+{
+  "%or": [
+    {
+      "%%prevRoot.owner_id": "%%user.id"
+    },
+    {
+      "%%prevRoot": {
+        "%exists": 0
+      }
+    }
+  ]
+}
+~~~
+ 
+ 
+# The Application
+The application is pretty bare-bones, and should work out of the box
