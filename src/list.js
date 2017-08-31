@@ -25,6 +25,13 @@ class TodoList extends React.Component {
       });
   }
 
+  loadMine() {
+    isAuthed() &&
+      getItems({ owner_id: authID(), }).then((items) => {
+        this.setState({ items, requestPending: false, });
+      });
+  }
+
   checkHandler(id, status) {
     updateItem(id, status).then(() => this.loadList(), { rule: 'checked', });
   }
@@ -57,6 +64,8 @@ class TodoList extends React.Component {
     return (
       isAuthed() &&
       <div>
+        <button onClick={() => this.loadMine()}>Show my items</button>
+        <button onClick={() => this.loadList()}>Show all items</button>
         <div className="controls">
           <input
             type="text"

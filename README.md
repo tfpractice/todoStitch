@@ -171,14 +171,118 @@ if (process.env.STITCH_URL) {
    items.deleteMany({ checked: true, owner_id: authID(), }).catch(logError);
 
 ~~~
-with a database connection and queries established and safely compartmentalized, our app is now ready to render. We'll go over the primary components
+with a database connection and queries established and safely compartmentalized, our app is now ready to render.Next, we'll go over the primary components
 
+## components
+ The primary components of this app are as follows
 - `index`,  renders the app
 - `home`, renders the list or the Sign-in link
 - `authControls`, which houses 
 - `list`, renders the actual items
 - `todoItem`, renders individual items
 - `checkPath`, renders a checked or empty box based on item status
+
+#AuthControls
+this component takes the stitchClient as a `Client` prop and renders either a Sign-in or Sign-out link based on the status of that property. Leveraging the anonymous authentication we established during setup, this component provides login and logout methods
+~~~js
+
+const AuthControls = ({ client, }) => {
+  const authed = !!client.authedId();
+  const logout = () => client.logout().then(() => location.reload());
+  const login = () => client.login().then(() => location.reload());
+
+  return (
+    <div className="login-header">
+      {authed
+        ? <a className="logout" href="#" onClick={logout}>
+            sign out
+        </a>
+        : <div className="login-links-panel">
+          <h2>TODO</h2>
+          <div onClick={login} className="signin-button">
+            <span className="signin-button-text">Sign in Anonymously</span>
+          </div>
+        </div>}
+    </div>
+  );
+};
+~~~ 
+
+## List
+The List component is the only component with internal state, and  most heavily leverages our stitch client, making requests to create, update, and delete todo-items. The primary methods are loadList() loadMine() which retrieve either all todo-items or those belonging to the current user
+
+~~~js
+
+import { authID, isAuthed, } from './dbClient';
+import { deleteChecked, getItems, insertItem, updateItem, } from './queries';
+
+class TodoList extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { items: [], };
+  }
+
+  componentWillMount() {
+    this.loadList();
+  }
+
+  componentDidMount() {
+    this.loadList();
+  }
+
+  loadList() {
+    isAuthed() &&
+      getItems().then((items) => {
+        this.setState({ items, requestPending: false, });
+      });
+  }
+
+  loadMine() {
+    isAuthed() &&
+      getItems({ owner_id: authID(), }).then((items) => {
+        this.setState({ items, requestPending: false, });
+      });
+  }
+  
+~~~
+
+`addItem`, `checkHandler`, and `clear` handle the insertion, updating, and deletion of documents, respectively
+
+~~~js
+
+  checkHandler(id, status) {
+    updateItem(id, status).then(() => this.loadList(), { rule: 'checked', });
+  }
+
+  addItem(event) {
+    if (event.keyCode != 13) {
+      return;
+    }
+    const text = event.target.value;
+
+    this.setState({ requestPending: true, }, () =>
+      insertItem(text, authID()).then(() => {
+        this._newitem.value = '';
+        this.loadList();
+      })
+    );
+  }
+
+  clear() {
+    this.setState({ requestPending: true, }, () =>
+      deleteChecked().then(() => this.loadList())
+    );
+  }
+
+  setPending() {
+    this.setState({ requestPending: true, });
+  }
+  ~~~
+
+
+
+
 
 
  
