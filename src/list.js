@@ -54,7 +54,8 @@ class TodoList extends React.Component {
   }
 
   render() {
-    const loggedInResult = (
+    return (
+      isAuthed() &&
       <div>
         <div className="controls">
           <input
@@ -87,8 +88,6 @@ class TodoList extends React.Component {
         </ul>
       </div>
     );
-
-    return isAuthed() ? loggedInResult : null;
   }
 }
 
