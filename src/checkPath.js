@@ -1,6 +1,4 @@
 import React from 'react';
-import { authID, db, items, stitchClient, users, } from './dbClient';
-import { deleteChecked, getItems, insertItem, updateItem, } from './queries';
 
 const CheckPath = ({ item, }) =>
   item.checked

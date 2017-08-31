@@ -1,5 +1,5 @@
 import React from 'react';
-import { authID, isAuthed, items, stitchClient, } from './dbClient';
+import { authID, isAuthed, } from './dbClient';
 import { deleteChecked, getItems, insertItem, updateItem, } from './queries';
 import TodoItem from './todoItem';
 
@@ -26,12 +26,7 @@ class TodoList extends React.Component {
   }
 
   checkHandler(id, status) {
-    updateItem(id, status).then(
-      () => {
-        this.loadList();
-      },
-      { rule: 'checked', }
-    );
+    updateItem(id, status).then(() => this.loadList(), { rule: 'checked', });
   }
 
   addItem(event) {
@@ -66,20 +61,17 @@ class TodoList extends React.Component {
             type="text"
             className="new-item"
             placeholder="add a new item..."
-            ref={(n) => {
-              this._newitem = n;
-            }}
+            ref={n => (this._newitem = n)}
             onKeyDown={e => this.addItem(e)}
           />
-          {this.state.items.filter(x => x.checked).length > 0
-            ? <div
+          {this.state.items.filter(x => x.checked).length > 0 &&
+            <div
               href=""
               className="cleanup-button"
               onClick={() => this.clear()}
             >
-                clean up
-            </div>
-            : null}
+              clean up
+            </div>}
         </div>
         <ul className="items-list">
           {this.state.items.length == 0
