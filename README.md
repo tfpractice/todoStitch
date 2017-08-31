@@ -11,12 +11,43 @@
  That last sentence was music to my ears. As I'm constantly experimenting with code,I've come to appreciate mongoDB for it's quick uptake compared to its relational counterparts, and Stitch only makes things better. I've created this small todo-list application, to introduce some of the benefits of Stitch, and show demonstrate just how easy it is to get started.
  
 # What we'll be building
- This is a small CRUD-style application that uses MondoDB Stitch for the backend and React for the UI. Users will be able to Sign-in anonymously (the best!), create new tasks, and edit/delete the tasks they create. Excluding the boilerplate (ugh!) config files, this project's `src` directory consists almost entirely of react components and two files dedicated to the backend. This project is very minimal, so fair warning, it's pretty ugly.
+ This is a small CRUD-style application that uses MondoDB Stitch for the backend and React for the UI. Users will be able to Sign-in anonymously (the best!), create new tasks, and edit/delete the tasks they create.
+ Excluding the boilerplate (ugh!) config files, this project's `src` directory consists almost entirely of react components and two files dedicated to the backend. This project is very minimal, so fair warning, it's pretty ugly.
  
+## collection info
+Each document in the `items` collection should be structured as follows
+  ~~~js
+  {
+   "_id" : <ObjectID>,
+   "text" : <string>,      // ToDo item.
+   "owner_id" : <string>,  // Corresponds to the user logged into the app.
+   "checked" : <boolean>   // Optional.  Only appears if user checks the item in the app.
+ }
+  ~~~
+And since our users will be anonymous, they will require little more than the default properties
+   
 # Setup
  For this project, you'll need a MongoDB Atlas cluster using MongoDB version 3.4+. The tutorial uses an Atlas Free Tier cluster. They're exceedingly easy to setup, you can find instructions here.
  
- You'll need to create a new Stitch application to associate with  your cluster. Atlas features an intuitive UI that walks you through creating a new stitch application in under eight clicks. Then you'll be redirected to your console to setup a new collection and set up your client.
+ You'll need to create a new Stitch application to associate with  your cluster. Atlas features an intuitive UI that walks you through creating a new stitch application in under eight clicks. Then you'll be redirected to your console to setup a new collection and database client.
  ![stitchWelcome][stitchWelcome]
-
  
+ Enable anonymous authentication, and create a new `todo` database and `items` collection. From there you'll be presented with a number fo options to setup a client. Select the nodejs tab and you'll be presented with something to the effect of:
+ 
+ ~~~js
+const stitch = require("mongodb-stitch")
+const client = new stitch.StitchClient('<YOUR-APP-ID>');
+const db = client.service('mongodb', 'mongodb-atlas').db('<DATABASE>');
+client.login().then(() =>
+  db.collection('<COLLECTION>').updateOne({owner_id: client.authedId()}, {$set:{number:42}}, {upsert:true})
+).then(() =>
+  db.collection('<COLLECTION>').find({owner_id: client.authedId()})
+).then(docs => {
+  console.log("Found docs", docs)
+  console.log("[MongoDB Stitch] Connected to Stitch")
+}).catch(err => {
+  console.error(err)
+});
+ ~~~
+ 
+ While this code is not useful for our app, it does show that you're more or less ready to start running your application. That easily, 
