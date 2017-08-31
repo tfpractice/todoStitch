@@ -8,7 +8,7 @@
  >> MongoDB Stitch lets developers focus on building applications rather than on managing data manipulation code, service integration, or backend infrastructure. Whether you’re just starting up and want a fully managed backend as a service, or you’re part of an enterprise and want to expose existing MongoDB data to new applications, Stitch lets you focus on building the app users want, not on writing boilerplate backend logic.
   
 
- That last sentence was music to my ears. As I'm constantly experimenting with code,I've come to appreciate mongoDB for it's quick uptake compared to its relational counterparts, and Stitch only makes things better. I've created this small todo-list application, to introduce some of the benefits of Stitch, and show demonstrate just how easy it is to get started.
+ That last sentence was music to my ears. As I'm constantly experimenting with code, I've already come to appreciate mongoDB for it's quick uptake compared to its relational counterparts, and Stitch only makes things better. I've created this small todo-list application, to introduce some of the benefits of Stitch, and demonstrate just how easy it is to get started.
  
 # What we'll be building
  This is a small CRUD-style application that uses MondoDB Stitch for the backend and React for the UI. Users will be able to Sign-in anonymously (the best!), create new tasks, and edit/delete the tasks they create.
@@ -81,7 +81,7 @@ But since only users who create items should be able to modify them, the write r
   ]
 }
 ~~~
- 
+  
  
 # The Application
 The application is pretty bare-bones, and should work out of the box
