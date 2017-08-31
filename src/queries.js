@@ -1,4 +1,4 @@
-import { authID, db, items, stitchClient, } from './dbClient';
+import { authID, items, stitchClient, } from './dbClient';
 
 export const logError = e => console.error(e.message);
 

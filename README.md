@@ -77,7 +77,7 @@ Sensibly, the top level read rules default to
 }
 ~~~ 
 which only allows a client to read documents whose owner_id matches the ID of the current authenticated user. Because our `todo.items` collection allows everyone to read all items, we'll set the Top Level Document read rule to an empty object `{}`, which allows read access to [all fields][readall]
-
+   
 The default write rule is identical, and 
 since we only allow users to modify their own items, this sounds like it should work. But a quick glance at the docs specifies that
 > the write operation must __result__ in a document where the owner_id equals the user ID of the client issuing the write. If the value of owner_id does not match the client user ID, MongoDB Stitch blocks the write.
@@ -122,4 +122,63 @@ You can learn more about rules and validations [here][rules], but with our datab
 
 
 # The Application
-The application is pretty bare-bones, and should work out of the box
+The application is pretty bare-bones, and should work out of the box. The `src` directory is composed mostly of react components, and files to connect with Stitch.
+
+## connecting with Stitch
+All of the backend functionality is split into two modules, `dbClient`, and `queries`. `dbClient` contains code similar to what we saw during the setup stage of our application, and allows us to connect to our Stitch MongoDB service. First we set up our APP_ID and baseUrl 
+~~~js
+import { StitchClient, } from 'mongodb-stitch';
+
+let appId = <YOUR-APP-ID>;
+
+if (process.env.APP_ID) {
+  appId = process.env.APP_ID;
+}
+let  options = {};
+
+if (process.env.STITCH_URL) {
+  options.baseUrl = process.env.STITCH_URL;
+}
+
+~~~
+
+ Then initialize a new StitchClient and connect to our db and collections
+ ~~~js
+ export const stitchClient = new StitchClient(appId, options);
+ export const db = stitchClient.service('mongodb', 'mongodb-atlas').db('todo');
+ export const items = db.collection('items');
+ export const users = db.collection('users');
+ ~~~
+ 
+ 
+ `queries.js` contains all of the relevant queries for operating on our items. If you're familiar with server side mongo, then after importing the `items` collection from `dbClient`, this should be a breeze. 
+ 
+ 
+ ~~~js
+ import { authID, items, stitchClient, } from './dbClient';
+
+ export const logError = e => console.error(e.message);
+
+ export const getItems = params => items.find(params).catch(logError);
+
+ export const updateItem = (_id, checked) =>
+   items.updateOne({ _id, }, { $set: { checked, }, }).catch(logError);
+
+ export const insertItem = (text, owner_id = stitchClient.authedId()) =>
+   items.insert([{ text, owner_id, }, ]).catch(logError);
+
+ export const deleteChecked = () =>
+   items.deleteMany({ checked: true, owner_id: authID(), }).catch(logError);
+
+~~~
+with a database connection and queries established and safely compartmentalized, our app is now ready to render. We'll go over the primary components
+
+- `index`,  renders the app
+- `home`, renders the list or the Sign-in link
+- `authControls`, which houses 
+- `list`, renders the actual items
+- `todoItem`, renders individual items
+- `checkPath`, renders a checked or empty box based on item status
+
+
+ 
