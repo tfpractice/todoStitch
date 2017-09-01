@@ -47,7 +47,7 @@ const db = client.service('mongodb', 'mongodb-atlas').db('<DATABASE>');
 While this code is not yet useful for our app, it does show that you're more or less ready to start running your application. That easily! But before jumping in, there are a few database specific rules we need to establish.
  
 # Rules, Validations and Filters
-The primary service we'l be using is the MongoDB Service. For this to work, we have to set up rules to control access to fields for read and write operations. When making various requests to your database, these rules determine which data will come back and how it can be manipulated.
+This app will primarily make use of the MongoDB Service. For this to work, we have to set up rules to control access to fields for read and write operations. When making various requests to your database, these rules determine which data will come back and how it can be manipulated.
 
 If you're familiar with other BaaS platforms (like FireBase or Apollo), this is conceptually identical, and the primary distinctions are syntactic. If a rule evaluates to true, read and write operation can access the fields for which the rule applies. If a rule evaluates to false, access is denied. More specifically,
 > If a rule determines that a field is readable:
