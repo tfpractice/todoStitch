@@ -38,12 +38,18 @@ You'll need to create a new Stitch application to associate with your cluster. A
 
 ![stitchWelcome][stitchWelcome]
  
-Enable anonymous authentication, and create a new `todo` database and `items` collection. From there you'll be presented with a number code samples to direct you in establishing a client. While this code is not exactly useful for our app, it does show that you're more or less ready to start running your application. That easily! But before jumping in, there are a few database specific rules we need to establish.
+Enable anonymous authentication, and create a new `todo` database and `items` collection. From there you'll be presented with a number code samples to direct you in establishing a client. The Nodejs tab presents something to the efect of 
+~~~js
+const stitch = require("mongodb-stitch")
+const client = new stitch.StitchClient('todostitch-wbtho');
+const db = client.service('mongodb', 'mongodb-atlas').db('<DATABASE>');
+~~~
+While this code is not yet useful for our app, it does show that you're more or less ready to start running your application. That easily! But before jumping in, there are a few database specific rules we need to establish.
  
 # Rules, Validations and Filters
-> For a MongoDB Service, you have to set up rules to control access to fields for read and write operations.
-  
-When making various requests to your database, these rules determine which data will come back and how it can be manipulated. If you're familiar with other BaaS platforms like FireBase or Apollo, this is conceptually identical, and the primary distinctions are syntactic. If a rule evaluates to true, read and write operation can access the fields for which the rule applies. If a rule evaluates to false, access is denied. More specifically,
+The primary service we'l be using is the MongoDB Service. For this to work, we have to set up rules to control access to fields for read and write operations. When making various requests to your database, these rules determine which data will come back and how it can be manipulated.
+
+If you're familiar with other BaaS platforms (like FireBase or Apollo), this is conceptually identical, and the primary distinctions are syntactic. If a rule evaluates to true, read and write operation can access the fields for which the rule applies. If a rule evaluates to false, access is denied. More specifically,
 > If a rule determines that a field is readable:
   Read and write operations can query on the field.
   Read operations can include the field in their results.
