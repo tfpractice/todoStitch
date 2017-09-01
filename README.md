@@ -32,16 +32,16 @@ Each document in the `items` collection should be structured as follows
 And since our users will be anonymous, they will require little more than the default properties
    
 # Setup
-For this project, you'll need a MongoDB Atlas cluster using MongoDB version 3.4+. The tutorial uses an Atlas Free Tier cluster. They're exceedingly easy to setup, you can find instructions [here](https://docs.atlas.mongodb.com/getting-started/).
+For this project, you'll need a MongoDB Atlas cluster using MongoDB version 3.4+. The tutorial uses an Atlas Free Tier cluster. They're exceedingly easy to setup and you can find instructions [here](https://docs.atlas.mongodb.com/getting-started/).
  
-You'll need to create a new Stitch application to associate with your cluster. Atlas features an intuitive UI that walks you through creating a new stitch application in under eight clicks. Then you'll be redirected to your console to setup a new collection and database client.
+You'll need to create a new Stitch application to associate with your cluster. Atlas features an intuitive UI that guides you through creating a new Stitch app in under eight clicks. Then you'll be redirected to your console to setup a new collection and database client.
 
 ![stitchWelcome][stitchWelcome]
  
-Enable anonymous authentication, and create a new `todo` database and `items` collection. From there you'll be presented with a number code samples to direct you in establishing a client. The Nodejs tab presents something to the efect of 
+Enable anonymous authentication, and create a new `todo` database and `items` collection. From there you'll be presented with a number code samples to direct you in establishing a client. The Nodejs tab presents something to the effect of 
 ~~~js
 const stitch = require("mongodb-stitch")
-const client = new stitch.StitchClient('todostitch-wbtho');
+const client = new stitch.StitchClient('<YOUR-APP-ID>');
 const db = client.service('mongodb', 'mongodb-atlas').db('<DATABASE>');
 ~~~
 While this code is not yet useful for our app, it does show that you're more or less ready to start running your application. That easily! But before jumping in, there are a few database specific rules we need to establish.
@@ -49,7 +49,7 @@ While this code is not yet useful for our app, it does show that you're more or 
 # Rules and Validations
 This app will primarily make use of the MongoDB Service. For this to work, we have to set up rules to control access to fields for read and write operations. When making various requests to your database, these rules determine which data will come back and how it can be manipulated.
 
-If you're familiar with other BaaS platforms (like FireBase or Apollo), this is conceptually identical, and the primary distinctions are syntactic. If a rule evaluates to true, read and write operation can access the fields for which the rule applies. If a rule evaluates to false, access is denied. More specifically,
+If you're familiar with other BaaS platforms (e.g. FireBase, Apollo), this is conceptually identical, and the primary distinctions are syntactic. If a rule evaluates to true, read and write operations can access the fields for which the rule applies. If a rule evaluates to false, access is denied. More specifically,
 > If a rule determines that a field is readable:
   Read and write operations can query on the field.
   Read operations can include the field in their results.
