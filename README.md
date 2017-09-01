@@ -7,17 +7,17 @@
 [exists]:https://docs.mongodb.com/manual/reference/operator/query/exists/#op._S_exists
 [readall]:https://docs.mongodb.com/stitch/rules/mongodb-rules-read/#mongodb-service-read-all-fields
 
-I enjoy programming for the sake of programming. I have repos solving the same problem in multiple languages using multiple tools and techniques, I can talk for hours about code quality, and the pleasures of refactoring. What I'm really trying to say is that I love code, almost to an absurd degree. What I don't love, however, is the setup. And apparently I'm not alone. Within the React community there's a preponderance of boilerplate repos and single function libraries, all geared toward developers who want to experiment, or just get something on the screen. But create-react-app cant do it all. Sometimes you need data, fast. And if you haven't the time or energy to wrangle the waterfall of firebase callbacks, or retrain your brain for GraphQL, you'll be glad to know that one of the JS communities most popular databases, MongoDB, has joined the Backend-as-a-Service bandwagon, and it's pretty awesome.
+As a developer, I enjoy finding new solutions to old problems. I can talk ad nauseam about code quality. And refactoring gives me a real joy. In short, I love code. What I don't love, however, is the setup. And apparently I'm not the only one. Within the React community alone, there's a preponderance of boilerplate repos and single function libraries, all designed to help get you started as quickly as possible. But create-react-app cant do it all. Sometimes you need a backend, fast. And if you haven't the time or energy to wrangle the waterfall of Firebase callbacks, or retrain your brain for GraphQL, you'll be glad to know that MongoDB has joined the Backend-as-a-Service bandwagon,  with its new product Stitch, and it's pretty awesome.
  
 In their own words 
  
 > MongoDB Stitch lets developers focus on building applications rather than on managing data manipulation code, service integration, or backend infrastructure. Whether you’re just starting up and want a fully managed backend as a service, or you’re part of an enterprise and want to expose existing MongoDB data to new applications, Stitch lets you focus on building the app users want, not on writing boilerplate backend logic.
   
 
-That last sentence was music to my ears. As I'm constantly experimenting with code, I've already come to appreciate mongoDB for it's quick uptake compared to its relational counterparts, and Stitch only makes things better. I've created this small todo-list application, to introduce some of the benefits of Stitch, and demonstrate just how easy it is to get started.
+That last sentence was music to my ears. As I'm constantly experimenting with code, I've already come to appreciate mongoDB for it's quick uptake compared to its relational counterparts, and Stitch only makes things better. MongoDB Stitch, composes number of services together to represent your application backend. 'Stitched' together in this way, this patchwork of services allow for a graceful, agile developmennt process. Useful at any stage of development, Stitch can add features to an existing application, selectively expose existing data to new applications, or be your complete backend. To introduce some of the benefits of Stitch, and demonstrate just how easy it is to get started, I've created this repository and will walk you through the development of a rather simple todo-list application.
  
 # What we'll be building
-This is a small CRUD-style application that uses MondoDB Stitch for the backend and React for the UI. Users will be able to Sign-in anonymously (the best!), create new tasks, and edit/delete the tasks they create. Excluding the boilerplate (ugh!) config files, this project's `src` directory consists almost entirely of react components and two files dedicated to the backend. This project is very minimal, so fair warning, it's pretty ugly.
+This is a small CRUD-style application that uses MondoDB Stitch for the backend and React for the UI. Users will be able to Sign-in anonymously, view tasks, create new tasks, and edit/delete the tasks they create. In order to do this, we will use two of Stitch's services: the MongoDB service (powered by Atlas, MondoDB's database-as-a-service) and anonymous authentication. I'll walk you through setting up the project, connecting with an Atlas cluster, establishing database rules, and running the app. After that feel free to fork this repo, and add as many features as you like. Fair warning, this project is very minimal, and is likely not the prettiest thing you've ever built.
  
 ## Collection info
 Each document in the `items` collection should be structured as follows
@@ -25,14 +25,14 @@ Each document in the `items` collection should be structured as follows
 {
    "_id" : <ObjectID>,
    "text" : <string>,      // ToDo item.
-   "owner_id" : <string>,  // Corresponds to the user logged into the app.
+   "owner_id" : <string>,  // Corresponds to the user who created the task.
    "checked" : <boolean>   // Optional.  Only appears if user checks the item in the app.
 }
 ~~~
 And since our users will be anonymous, they will require little more than the default properties
    
 # Setup
-For this project, you'll need a MongoDB Atlas cluster using MongoDB version 3.4+. The tutorial uses an Atlas Free Tier cluster. They're exceedingly easy to setup, you can find instructions here.
+For this project, you'll need a MongoDB Atlas cluster using MongoDB version 3.4+. The tutorial uses an Atlas Free Tier cluster. They're exceedingly easy to setup, you can find instructions [here](https://docs.atlas.mongodb.com/getting-started/).
  
 You'll need to create a new Stitch application to associate with your cluster. Atlas features an intuitive UI that walks you through creating a new stitch application in under eight clicks. Then you'll be redirected to your console to setup a new collection and database client.
 
