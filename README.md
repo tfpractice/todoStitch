@@ -229,9 +229,9 @@ const AuthControls = ({ client, }) => {
 ~~~ 
 
 ### List
-The List component is the only component with internal state, and  most heavily leverages our stitch client, making requests to create, update, and delete todo-items. The primary methods are loadList() loadMine() which retrieve either all todo-items or those belonging to the current user
-
+The List component is the only component with internal state, and  most heavily leverages our stitch client, making requests to create, update, and delete todo-items. The methods `loadList` and `loadMine` retrieve either all todo-items or those belonging to the current user, respectively
 ~~~js
+// src/list.js
 
 import { authID, isAuthed, } from './dbClient';
 import { deleteChecked, getItems, insertItem, updateItem, } from './queries';
@@ -264,13 +264,12 @@ class TodoList extends React.Component {
         this.setState({ items, requestPending: false, });
       });
   }
-  
+}
 ~~~
 
-`addItem`, `checkHandler`, and `clear` handle the insertion, updating, and deletion of documents, respectively
+The `addItem`, `checkHandler`, and `clear` methods handle the insertion, updating, and deletion of documents, respectively
 
 ~~~js
-
   checkHandler(id, status) {
     updateItem(id, status).then(() => this.loadList(), { rule: 'checked', });
   }
@@ -298,11 +297,49 @@ class TodoList extends React.Component {
   setPending() {
     this.setState({ requestPending: true, });
   }
+~~~
+  
+Along with a field to create new items and a set of buttons to determine which items appear on screen and to clear the current users completed items, the List component renders the tasks themselves, represented by a `TodoItem`, and passes them each callbacks, scoped to the list with arrow functions.
+
+~~~js
+  render() {
+    return (
+      isAuthed() &&
+      <div>
+        <button onClick={() => this.loadMine()}>Show my items</button>
+        <button onClick={() => this.loadList()}>Show all items</button>
+        <div className="controls">
+          <input
+            type="text"
+            className="new-item"
+            placeholder="add a new item..."
+            ref={n => (this._newitem = n)}
+            onKeyDown={e => this.addItem(e)}
+          />
+          {this.state.items.filter(x => x.checked).length > 0 &&
+            <div
+              href=""
+              className="cleanup-button"
+              onClick={() => this.clear()}
+            >
+              clean up
+            </div>}
+        </div>
+        <ul className="items-list">
+          {this.state.items.length == 0
+            ? <div className="list-empty-label">empty list.</div>
+            : [ ...this.state.items, ].map(item =>
+              <TodoItem
+                key={item._id.toString()}
+                item={item}
+                onChange={() => this.loadList()}
+                onStartChange={() => this.setPending()}
+              />
+            )}
+        </ul>
+      </div>
+    );
+  }
   ~~~
-
-
-
-
-
-
- 
+### TodoItem
+This component renders a task and its text
