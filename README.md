@@ -370,3 +370,6 @@ const TodoItem = ({ item, onChange, onStartChange, }) => {
 
 
 # Conclusion
+And that's our application. Using Stitch's mongoDB service, we successfully established a database connection without setting up a local connection or a ODM like Mongoose. With the Authentication service, we set up collection permissions and document relationships without having to manually configure and integrate an authorization system (e.g. Passport & its plethora of strategies). And We were able to focus on producing a clean, consistent, and secure React application.
+
+[MongoDB Stitch](https://www.mongodb.com/cloud/stitch) is a wonderfully convenient tool for development teams any stage in their process, and I would highly recommend it for developers keen on experimentation. For more information on how it can be of use to you, check their site. I hope you found this tutorial useful, as I enjoyed walking you through it. Now that I have stitch, I'm off to rewrite some old projects.
