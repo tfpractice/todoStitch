@@ -128,9 +128,11 @@ You can learn more about rules and validations [here][rules], but with our datab
 # The Application
 The application is pretty bare-bones, and should work out of the box. The `src` directory is composed mostly of react components, and files to connect with Stitch.
 
-## connecting with Stitch
-All of the backend functionality is split into two modules, `dbClient`, and `queries`. `dbClient` contains code similar to what we saw during the setup stage of our application, and allows us to connect to our Stitch MongoDB service. First we set up our APP_ID and baseUrl 
+### Connecting with Stitch
+All of the backend functionality is split into two modules, `dbClient.js`, and `queries.js`. `dbClient` contains code similar to what we saw during the setup stage of our application, and allows us to connect to our Stitch MongoDB service. First we set up our `APP_ID` and `baseUrl` 
 ~~~js
+// src/dbClient.js
+
 import { StitchClient, } from 'mongodb-stitch';
 
 let appId = <YOUR-APP-ID>;
@@ -143,22 +145,35 @@ let  options = {};
 if (process.env.STITCH_URL) {
   options.baseUrl = process.env.STITCH_URL;
 }
-
 ~~~
+>To access MongoDB database and collection using the MongoDB service, use:
+- The StitchClient.service() function to return an instance of MongoDB Stitch MongoDBService.
+- The MongoDBService.db() function to returns a DB object.
+- The DB.collection() function to return a Collection object.
 
- Then initialize a new StitchClient and connect to our db and collections
+Then initialize a new StitchClient and connect to our db and collections. This module also provides two helper functions to check authentication status
  ~~~js
+ // src/dbClient.js
+
  export const stitchClient = new StitchClient(appId, options);
  export const db = stitchClient.service('mongodb', 'mongodb-atlas').db('todo');
+ 
  export const items = db.collection('items');
  export const users = db.collection('users');
+ 
+ export const authID = () => stitchClient.authedId();
+ export const isAuthed = () => !!authID();
  ~~~
+### Querying the database
+`queries.js` contains all of the relevant queries for operating on our items. If you're familiar with server side mongo, then after importing the `items` collection from `dbClient`, this should be a breeze. If not, here's a short explanation of the methods the application uses:
+- `Collection.find` method to retrieve documents from MongoDB
+- `Collection.insert` to create documents in MongoDB
+- `Collection.updateOne` to update documents in MongoDB
+- `Collection.deleteMany` to delete documents in MongoDB
  
+~~~js
+ // src/queries.js
  
- `queries.js` contains all of the relevant queries for operating on our items. If you're familiar with server side mongo, then after importing the `items` collection from `dbClient`, this should be a breeze. 
- 
- 
- ~~~js
  import { authID, items, stitchClient, } from './dbClient';
 
  export const logError = e => console.error(e.message);
@@ -177,7 +192,7 @@ if (process.env.STITCH_URL) {
 ~~~
 with a database connection and queries established and safely compartmentalized, our app is now ready to render.Next, we'll go over the primary components
 
-## components
+## Components
  The primary components of this app are as follows
 - `index`,  renders the app
 - `home`, renders the list or the Sign-in link
@@ -186,9 +201,10 @@ with a database connection and queries established and safely compartmentalized,
 - `todoItem`, renders individual items
 - `checkPath`, renders a checked or empty box based on item status
 
-#AuthControls
-this component takes the stitchClient as a `Client` prop and renders either a Sign-in or Sign-out link based on the status of that property. Leveraging the anonymous authentication we established during setup, this component provides login and logout methods
+### AuthControls
+this component takes the stitchClient as a `Client` prop and renders either a Sign-in or Sign-out link based on the status of that property. Leveraging the anonymous authentication we established during setup, this component also provides login and logout methods
 ~~~js
+// src/authControls.js
 
 const AuthControls = ({ client, }) => {
   const authed = !!client.authedId();
@@ -212,7 +228,7 @@ const AuthControls = ({ client, }) => {
 };
 ~~~ 
 
-## List
+### List
 The List component is the only component with internal state, and  most heavily leverages our stitch client, making requests to create, update, and delete todo-items. The primary methods are loadList() loadMine() which retrieve either all todo-items or those belonging to the current user
 
 ~~~js
