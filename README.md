@@ -342,4 +342,31 @@ Along with a field to create new items and a set of buttons to determine which i
   }
   ~~~
 ### TodoItem
-This component renders a task and its text
+This component renders a task and its text. If the current user can updated the item (from our previously established rules), a checkbox appears beside the component. If the item is completed, it is greyed out and stricken through. A clickHandler uses the db queries from `quries.js` to update the item via stitch, and event handlers passed as props allow the list component to respond to these updates.
+
+~~~js
+const TodoItem = ({ item, onChange, onStartChange, }) => {
+  const itemClass = item.checked ? 'done' : '';
+  const canEdit = authID() === item.owner_id;
+  const clicked = () => {
+    canEdit &&
+      Promise.resolve(onStartChange())
+        .then(() => updateItem(item._id, !item.checked))
+        .then(onChange);
+  };
+
+  return (
+    <div className="todo-item-root">
+      <label className="todo-item-container" onClick={clicked}>
+        {canEdit && <CheckPath item={item} />}
+        <span className={`todo-item-text ${itemClass}`}>
+          {item.text}
+        </span>
+      </label>
+    </div>
+  );
+};
+~~~
+
+
+# Conclusion
