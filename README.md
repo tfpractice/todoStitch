@@ -7,7 +7,7 @@
 [exists]:https://docs.mongodb.com/manual/reference/operator/query/exists/#op._S_exists
 [readall]:https://docs.mongodb.com/stitch/rules/mongodb-rules-read/#mongodb-service-read-all-fields
 
-As a developer, I enjoy finding new solutions to old problems. I can talk ad nauseam about code quality. And refactoring gives me a real joy. In short, I love code. What I don't love, however, is the setup. And apparently I'm not the only one. Within the React community alone, there's a preponderance of boilerplate repos and single function libraries, all designed to help get you started as quickly as possible. But create-react-app cant do it all. Sometimes you need a backend, fast. And if you haven't the time or energy to wrangle the waterfall of Firebase callbacks, or retrain your brain for GraphQL, you'll be glad to know that MongoDB has joined the Backend-as-a-Service bandwagon,  with its new product Stitch, and it's pretty awesome.
+As a developer, I enjoy finding new solutions to old problems, discussing code quality, and refactoring ad nauseam. I love almost everything about making apps. Everything but the setup. And apparently I'm not the only one. Within the React community alone boasts preponderance of boilerplate repos and single function libraries designed to help get you started as quickly as possible. But [Create React App](https://github.com/facebookincubator/create-react-app) cant do it all. Sometimes you need a backend, fast. And if you haven't the energy to wrangle a waterfall of Firebase callbacks, or retrain your brain for GraphQL, you'll be glad to know that MongoDB has joined the Backend-as-a-Service bandwagon, with its new product Stitch, and it's a benefit to us all.
  
 In their own words 
  
