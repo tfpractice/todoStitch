@@ -46,7 +46,7 @@ const db = client.service('mongodb', 'mongodb-atlas').db('<DATABASE>');
 ~~~
 While this code is not yet useful for our app, it does show that you're more or less ready to start running your application. That easily! But before jumping in, there are a few database specific rules we need to establish.
  
-# Rules, Validations and Filters
+# Rules and Validations
 This app will primarily make use of the MongoDB Service. For this to work, we have to set up rules to control access to fields for read and write operations. When making various requests to your database, these rules determine which data will come back and how it can be manipulated.
 
 If you're familiar with other BaaS platforms (like FireBase or Apollo), this is conceptually identical, and the primary distinctions are syntactic. If a rule evaluates to true, read and write operation can access the fields for which the rule applies. If a rule evaluates to false, access is denied. More specifically,
@@ -58,9 +58,9 @@ If you're familiar with other BaaS platforms (like FireBase or Apollo), this is 
  Read and write operations cannot query on the field; query predicates on that field will not match any documents for read or write operations.
  Read operations will omit the field in their results.
 
-And these rules fall into two categories
- -  _Top Level Document_ apply to any and all fields in a document
- - _Field Specific Rules_ apply to specific fields and their descendants
+These rules fall into two categories
+ -  _Top Level Document_ , which apply to any and all fields in a document
+ - _Field Specific Rules_, which apply to specific fields and their descendants
 
 and can be specified as JSON documents
 ~~~js
@@ -70,25 +70,24 @@ and can be specified as JSON documents
   ...
 } 
 ~~~
-expressions can contain MongoDB query expression [operators][operators] (such as [$or][or] and [$exists][exists]), and special values called [expansions][expansions]. We'll be using `%user`,`%prev`, and `%prevRoot`
+expressions can contain MongoDB query [expression operators][operators] (such as [$or][or] and [$exists][exists]), and special values called [expansions][expansions]. We'll be using `%user`,`%prev`, and `%prevRoot`
 - `%user` refers to the user currently logged into the app.
 - `%prev` refers to a previous field-value before it is changed by a write operation
 - `%prevRoot` refers to a document referenced in a rules expression _before_ it is changed by a write operation.
 
 ## `todo.items` rules
-Sensibly, the top level read rules default to 
+Sensibly, the top level document read rules default to 
 ~~~js
 {
   "owner_id": "%%user.id"
 }
 ~~~ 
-which only allows a client to read documents whose owner_id matches the ID of the current authenticated user. Because our `todo.items` collection allows everyone to read all items, we'll set the Top Level Document read rule to an empty object `{}`, which allows read access to [all fields][readall]
+which only allows a client to read documents whose owner_id matches the ID of the current authenticated user. Because our `todo.items` collection allows everyone to read all items, we'll set this rule to an empty object `{}`, which allows read access to [all fields][readall]
    
-The default write rule is identical, and 
-since we only allow users to modify their own items, this sounds like it should work. But a quick glance at the docs specifies that
-> the write operation must __result__ in a document where the owner_id equals the user ID of the client issuing the write. If the value of owner_id does not match the client user ID, MongoDB Stitch blocks the write.
+The default top level write rule is identical. Since we only allow users to modify their own items, this sounds like it should work. But a quick glance at the [docs](https://docs.mongodb.com/stitch/rules/mongodb-rules-write/) specifies that
+> the write operation must  __result__  in a document where the owner_id equals the user ID of the client issuing the write. If the value of owner_id does not match the client user ID, MongoDB Stitch blocks the write.
 
-Even if a user owns an item, deleting it will result in no document at all. So in a strange yet obvious way, the default write rules will not work, and we need to edit the write rules with some expansions.
+Even if a user owns an item, deleting it will result in no document at all. In a strange yet obvious way, this means that the default write rules will not work, and we need to edit it with some expansions.
 ~~~js
 {
   "%or": [
@@ -107,7 +106,7 @@ This means that a user can perform a write operation on a document if
  - the document _prior to the operation_ was owned by the current  
  -  the document is newly inserted
  
-
+Finally, we should add some field_specific validations to protect against invalid updates. 
   
 ## Validations
 Validation rules apply to update and insert operations. If the update and insert operations do not pass the validation rule, MongoDB Stitch fails the operations.  We will apply a field specific validation to the `owner_id` field of our `items` collection. Its default declares an update or insert to be valid if the resulting document's `owner_id` field matches the current user or is no owner_id field existed at all.
@@ -119,11 +118,10 @@ Validation rules apply to update and insert operations. If the update and insert
   ]
 }
 ~~~
- Having already established a similar Top Level Rule, we simply need to ensure that users can only update or insert documents that they own/create. and set the validation to 
+Having already established a similar top level rule, we simply need to ensure that users can only update or insert documents that they own/create, and disallow users from reassigning tasks. We do this by setting the rule to
  ~~~js
  "%%user.id"
  ~~~
-
 You can learn more about rules and validations [here][rules], but with our database rules configured, we can now move on to our application!
 
 
